@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Nextup Up",
+  "version": "1.0.0",
+  "description": "Reads the Nextup position column for the Omarchy bar.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyHSWHX79feEOai4ByHT5Zt3bY/hFysbR6QJJbGKEkjL0Qsz6mhrlQgQ4+PjNwVmXAMzBzdUBtYWYDjiTLs4QCRhHK6rUtsebGi/u54FFpKFQIdbBIKK+hgPtgxqr7ITMArY/5z2LD1G1Aut+xMDdDE9xLdhvb5pKkr4EtacGJpnx6n3zLgNnLwSNtY8QdMwVz+jBia7+yvF8EW7w68JPfVrjPAMcnNB3rdOI7qYt5Zzod9weIh8mSLJc+9HubsUfhO6dG4hgNuq0VtL7Ngr2fmenE9MT2YJiHE6Z0EtypbYJJbFwjmzVGDKyPP0L5NBpIRjTxnQAb75NDIjTmlqKcwIDAQAB",
+  "permissions": ["nativeMessaging", "alarms"],
+  "host_permissions": ["https://login.thenextup.com/*"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["https://login.thenextup.com/*"],
+      "js": ["position.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

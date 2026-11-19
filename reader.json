@@ -1,0 +1,15 @@
+{
+  "username": [
+    "op://Personal/Thenextup/username",
+    "op://Personal/Nextup/username",
+    "op://Private/Nextup/username"
+  ],
+  "password": [
+    "op://Personal/Thenextup/password",
+    "op://Personal/Nextup/password",
+    "op://Private/Nextup/password"
+  ],
+  "code": [
+    "op://Personal/Thenextup/Code"
+  ]
+}
