@@ -122,7 +122,7 @@ Panel {
                 }
 
                 PlainText {
-                  text: person.modelData.time
+                  text: root.host ? root.host.formatTime(person.modelData.time, root.host.timeFormat) : ""
                   color: root.dim
                   font.family: root.fontFamily
                   font.pixelSize: Style.font.caption

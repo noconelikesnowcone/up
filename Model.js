@@ -19,6 +19,32 @@ function plain(value, limit) {
   return text
 }
 
+// HH:mm from the reader. The pattern uses HH, H, hh, h, mm, a, and A.
+function formatTime(value, pattern) {
+  var text = plain(value, 5)
+  var match = /^(\d{2}):(\d{2})$/.exec(text)
+  if (!match) return ""
+  var hour = Number(match[1])
+  var minute = Number(match[2])
+  if (hour > 23 || minute > 59) return ""
+  var form = plain(pattern, 24)
+  if (!form) form = "HHmm"
+  var h12 = hour % 12
+  if (h12 === 0) h12 = 12
+  var hour24 = match[1]
+  var minutes = match[2]
+  var pad12 = (h12 < 10 ? "0" : "") + h12
+  return form.replace(/HH|hh|mm|H|h|a|A/g, function (token) {
+    if (token === "HH") return hour24
+    if (token === "H") return String(hour)
+    if (token === "hh") return pad12
+    if (token === "h") return String(h12)
+    if (token === "mm") return minutes
+    if (token === "a") return hour < 12 ? "am" : "pm"
+    return hour < 12 ? "AM" : "PM"
+  })
+}
+
 function blank(status) {
   return { status: status, name: "", label: "", time: "", rows: [] }
 }
@@ -69,5 +95,5 @@ function board(text, now) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { STALE_MS: STALE_MS, board: board, plain: plain }
+  module.exports = { STALE_MS: STALE_MS, board: board, plain: plain, formatTime: formatTime }
 }

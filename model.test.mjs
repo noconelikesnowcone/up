@@ -19,6 +19,19 @@ function fresh(body) {
   return JSON.stringify({ updated: now, open: true, ...body })
 }
 
+test("the turn end can be printed as 1501, 15:01, or 3:01pm", () => {
+  const model = load()
+  assert.equal(model.formatTime("15:01", "HHmm"), "1501")
+  assert.equal(model.formatTime("15:01", "HH:mm"), "15:01")
+  assert.equal(model.formatTime("15:01", "h:mma"), "3:01pm")
+  assert.equal(model.formatTime("00:05", "HHmm"), "0005")
+  assert.equal(model.formatTime("12:00", "h:mma"), "12:00pm")
+  assert.equal(model.formatTime("09:05", "H:mm"), "9:05")
+  assert.equal(model.formatTime("1:20pm", "HHmm"), "")
+  assert.equal(model.formatTime("", "HHmm"), "")
+  assert.equal(model.formatTime("15:01", ""), "1501")
+})
+
 test("plain text drops markup, controls, and placeholders", () => {
   const model = load()
   const cleaned = model.plain(tracker + "\nAlex&amp; 100%")

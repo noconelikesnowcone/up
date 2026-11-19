@@ -2,8 +2,8 @@
 """Read the Nextup position list once a minute.
 
 The username and password stay in 1Password. This process asks the 1Password
-CLI for them when it has to sign in, then forgets them. It writes names and
-times for the bar and nothing else.
+CLI for them when it has to sign in, then forgets them. It writes names,
+and the top person's turn-end time, and nothing else.
 """
 
 import html.parser

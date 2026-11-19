@@ -21,34 +21,22 @@ function personName(value) {
   return kept[0] + " " + kept[kept.length - 1]
 }
 
-function clockOf(value) {
+// The turn ends at RotationTime. Keep the clock as written, without shifting
+// it into another timezone. The widget formats HH:mm for display.
+function endClock(value) {
   if (value == null || value === "") return ""
   var text = String(value).trim()
-  var shown = text.match(/^(\d{1,2}):(\d{2})\s*([ap]m)$/i)
-  if (shown) {
-    var hour = Number(shown[1])
-    if (hour < 1 || hour > 12) return ""
-    return String(hour) + ":" + shown[2] + shown[3].toLowerCase()
+  var iso = text.match(/T(\d{2}):(\d{2})/)
+  if (iso) {
+    var hour = Number(iso[1])
+    var minute = Number(iso[2])
+    if (hour > 23 || minute > 59) return ""
+    return iso[1] + ":" + iso[2]
   }
-  var date = null
-  if (typeof value === "number" && isFinite(value)) {
-    date = new Date(value)
-  } else {
-    var stamped = text.match(/^\/Date\((-?\d+)(?:[+-]\d+)?\)\/$/)
-    if (stamped) date = new Date(Number(stamped[1]))
-    else {
-      var parsed = Date.parse(text)
-      if (!isNaN(parsed)) date = new Date(parsed)
-    }
-  }
-  if (!date || isNaN(date.getTime())) return ""
-  var h = date.getHours()
-  var suffix = h < 12 ? "am" : "pm"
-  var h12 = h % 12
-  if (h12 === 0) h12 = 12
-  var minute = date.getMinutes()
-  var mm = minute < 10 ? "0" + minute : String(minute)
-  return String(h12) + ":" + mm + suffix
+  var plain = text.match(/^(\d{2}):(\d{2})$/)
+  if (!plain) return ""
+  if (Number(plain[1]) > 23 || Number(plain[2]) > 59) return ""
+  return plain[1] + ":" + plain[2]
 }
 
 function copyPerson(row) {
@@ -58,7 +46,7 @@ function copyPerson(row) {
     LeapFrogTypeId: row.LeapFrogTypeId,
     HoldPosition: row.HoldPosition,
     IsBookMark: row.IsBookMark,
-    StatusDateLocal: row.StatusDateLocal
+    RotationTime: row.RotationTime
   }
 }
 
@@ -144,14 +132,19 @@ function orderPosition(list, repsOnPoint, shiftTypeId) {
   var fixedOn = shift === 1
   var rows = []
   var limit = display.length - endCount
+  var top = true
   for (var r = 0; r < limit; r++) {
     var item = display[r].row
     if (!item) continue
     var name = personName(item.FriendlyName)
     if (!name) continue
+    // Only the person at the top has a turn-end time. The rest of the list
+    // is names alone.
+    var time = top ? endClock(item.RotationTime) : ""
+    top = false
     rows.push({
       name: name.slice(0, 80),
-      time: clockOf(item.StatusDateLocal).slice(0, 24),
+      time: time.slice(0, 5),
       point: !fixedOn && r + 1 <= reps
     })
     if (rows.length >= POSITION_ROW_MAX) break
@@ -177,6 +170,6 @@ if (typeof module !== "undefined") {
     POSITION_ROW_MAX: POSITION_ROW_MAX,
     orderPosition: orderPosition,
     peopleFromPayload: peopleFromPayload,
-    clockOf: clockOf
+    endClock: endClock
   }
 }

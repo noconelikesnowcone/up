@@ -59,14 +59,23 @@ class PollTests(unittest.TestCase):
                 "FriendlyName": "Alex Kim",
                 "StatusId": 1,
                 "LeapFrogTypeId": 0,
-                "StatusDateLocal": "2026-11-19T11:40:00",
+                "StatusDateLocal": "2026-11-19T13:20:59",
+                "RotationTime": "2026-11-19T15:01:18.5124752",
+            }, {
+                "FriendlyName": "Casey Diaz",
+                "StatusId": 1,
+                "LeapFrogTypeId": 0,
+                "RotationTime": "2026-11-19T16:00:00",
             }],
             "ActivityList": [{"FriendlyName": "Blair Chen", "GuestFirstName": "Pat"}],
         }])
         rows = poll.order_rows(payload, "2", "0")
         packed = json.dumps(rows)
         self.assertEqual(rows[0]["name"], "Alex Kim")
+        self.assertEqual([row["time"] for row in rows], ["15:01", ""])
+        self.assertNotIn("13:20", packed)
         self.assertNotIn("Blair", packed)
+        self.assertIn("Casey Diaz", packed)
         self.assertNotIn("Pat", packed)
 
 

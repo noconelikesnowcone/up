@@ -15,24 +15,25 @@ function person(name, extra) {
   return { FriendlyName: name, StatusId: 1, LeapFrogTypeId: 0, StatusDateLocal: "", ...extra }
 }
 
-test("clocks match the board, including midnight and noon", () => {
-  const { clockOf } = load()
-  assert.equal(clockOf("2026-11-19T11:40:00"), "11:40am")
-  assert.equal(clockOf("2026-11-19T00:05:00"), "12:05am")
-  assert.equal(clockOf("2026-11-19T12:00:00"), "12:00pm")
-  assert.equal(clockOf("1:20pm"), "1:20pm")
-  assert.equal(clockOf(""), "")
+test("the turn ends at the rotation clock, including midnight and noon", () => {
+  const { endClock } = load()
+  assert.equal(endClock("2026-11-19T15:01:18.5124752"), "15:01")
+  assert.equal(endClock("2026-11-19T00:05:00"), "00:05")
+  assert.equal(endClock("2026-11-19T12:00:00"), "12:00")
+  assert.equal(endClock("15:01"), "15:01")
+  assert.equal(endClock("1:20pm"), "")
+  assert.equal(endClock(""), "")
 })
 
-test("the position list keeps board order and drops people who are down", () => {
+test("only the top person's turn end is kept", () => {
   const { orderPosition } = load()
   const rows = orderPosition([
-    person("Alex Kim", { StatusDateLocal: "2026-11-19T11:40:00" }),
-    person("Blair Chen", { StatusDateLocal: "2026-11-19T11:55:00" }),
-    person("Casey Diaz", { StatusId: 15, StatusDateLocal: "2026-11-19T12:10:00" })
+    person("Alex Kim", { StatusDateLocal: "2026-11-19T13:20:59", RotationTime: "2026-11-19T15:01:18" }),
+    person("Blair Chen", { StatusDateLocal: "2026-11-19T11:55:00", RotationTime: "2026-11-19T16:00:00" }),
+    person("Casey Diaz", { StatusId: 15, RotationTime: "2026-11-19T17:00:00" })
   ], 2, 0)
   assert.equal(rows.map((row) => row.name).join("|"), "Alex Kim|Blair Chen")
-  assert.equal(rows.map((row) => row.time).join("|"), "11:40am|11:55am")
+  assert.equal(rows.map((row) => row.time).join("|"), "15:01|")
   assert.equal(rows.every((row) => row.point), true)
 })
 

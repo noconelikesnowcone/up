@@ -40,6 +40,14 @@ BarWidget {
 
   readonly property string status: board.status
   readonly property var rows: board.rows
+  // shell.json timeFormat. HHmm prints 1501. HH:mm prints 15:01. h:mma prints 3:01pm.
+  readonly property string timeFormat: {
+    var value = settings ? settings.timeFormat : ""
+    return value !== undefined && value !== null && String(value).length > 0 ? String(value) : "HHmm"
+  }
+  function formatTime(value, pattern) {
+    return Model.formatTime(value, pattern || timeFormat)
+  }
   readonly property string barLabel: {
     if (status === "up") return strings.t("bar.name").arg(board.label)
     if (status === "empty") return strings.t("bar.nobody")
@@ -50,12 +58,14 @@ BarWidget {
     return strings.t("bar.offline")
   }
   readonly property string tip: {
+    var pattern = timeFormat
     if (opened) return ""
     if (status === "up") {
       var lines = []
       for (var i = 0; i < rows.length; i++) {
         var row = rows[i]
-        if (row.time.length > 0) lines.push(strings.t("tooltip.upTime").arg(row.name).arg(row.time))
+        var when = formatTime(row.time, pattern)
+        if (when.length > 0) lines.push(strings.t("tooltip.upTime").arg(row.name).arg(when))
         else lines.push(strings.t("tooltip.up").arg(row.name))
       }
       return lines.join("\n")

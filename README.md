@@ -2,7 +2,9 @@
 
 Shows who is up on the Nextup floor board, in the Omarchy bar.
 
-The bar shows the first names of the top two people on the POSITION list. Click it for each full name and the time Nextup has. People already with a guest stay on the board and are not listed here.
+The bar shows the first names of the top two people on the POSITION list. Click it for every full name. The person at the top also shows when their turn ends. Nobody else has a time. People already with a guest stay on the board and are not listed here.
+
+The end time is formatted by `timeFormat` on the `giaodn.up` entry in `~/.config/omarchy/shell.json`. `HHmm` prints 1501. `HH:mm` prints 15:01. `h:mma` prints 3:01pm.
 
 The list is requested from Nextup once a minute. The login comes from a 1Password item named Nextup. Chromium does not have to be open.
 
