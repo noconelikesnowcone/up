@@ -32,6 +32,34 @@ test("the turn end can be printed as 1501, 15:01, or 3:01pm", () => {
   assert.equal(model.formatTime("15:01", ""), "1501")
 })
 
+test("a rotation is a new person at the top", () => {
+  const model = load()
+  const alex = model.board(fresh({
+    rows: [
+      { name: "Alex Kim", time: "15:01", point: true },
+      { name: "Blair Chen", time: "", point: false }
+    ]
+  }), now)
+  const blair = model.board(fresh({
+    rows: [
+      { name: "Blair Chen", time: "15:21", point: true },
+      { name: "Alex Kim", time: "", point: false }
+    ]
+  }), now)
+  const clockOnly = model.board(fresh({
+    rows: [
+      { name: "Alex Kim", time: "15:11", point: true },
+      { name: "Casey Diaz", time: "", point: false }
+    ]
+  }), now)
+  assert.equal(model.topName(alex), "Alex Kim")
+  assert.equal(model.rotated("", model.topName(alex)), false)
+  assert.equal(model.rotated(model.topName(alex), model.topName(alex)), false)
+  assert.equal(model.rotated(model.topName(alex), model.topName(clockOnly)), false)
+  assert.equal(model.rotated(model.topName(alex), model.topName(blair)), true)
+  assert.equal(model.rotated(model.topName(alex), model.topName(model.board(fresh({ rows: [] }), now))), false)
+})
+
 test("plain text drops markup, controls, and placeholders", () => {
   const model = load()
   const cleaned = model.plain(tracker + "\nAlex&amp; 100%")

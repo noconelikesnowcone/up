@@ -49,6 +49,19 @@ function blank(status) {
   return { status: status, name: "", label: "", time: "", rows: [] }
 }
 
+function topName(view) {
+  if (!view || view.status !== "up" || !view.rows || !view.rows.length) return ""
+  var name = view.rows[0].name
+  return typeof name === "string" ? name : ""
+}
+
+// A rotation is a new person at the top. The first list, an empty board, and
+// a clock-only update are not rotations.
+function rotated(previousTop, nextTop) {
+  if (!previousTop || !nextTop) return false
+  return previousTop !== nextTop
+}
+
 function board(text, now) {
   var parsed
   try {
@@ -95,5 +108,12 @@ function board(text, now) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { STALE_MS: STALE_MS, board: board, plain: plain, formatTime: formatTime }
+  module.exports = {
+    STALE_MS: STALE_MS,
+    board: board,
+    plain: plain,
+    formatTime: formatTime,
+    topName: topName,
+    rotated: rotated
+  }
 }

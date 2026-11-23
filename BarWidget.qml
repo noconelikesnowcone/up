@@ -21,6 +21,15 @@ BarWidget {
     return base + "/omarchy/giaodn.up.json"
   }
 
+  readonly property string quietPath: {
+    var home = Quickshell.env("HOME")
+    var stateHome = Quickshell.env("XDG_STATE_HOME")
+    var base = stateHome && stateHome.length > 0 ? stateHome : (home + "/.local/state")
+    return base + "/omarchy/notifications/quiet.json"
+  }
+  readonly property string rotationSound: fileUrlPath(Qt.resolvedUrl("rotation.wav"))
+  property string lastTop: ""
+
   readonly property string codePath: {
     var home = Quickshell.env("HOME")
     var stateHome = Quickshell.env("XDG_STATE_HOME")
@@ -88,8 +97,40 @@ BarWidget {
     if (panelLoader.item) panelLoader.item.closeForPopoutSwitch()
   }
 
+  function fileUrlPath(url) {
+    var text = String(url)
+    if (text.indexOf("file://") === 0) text = text.slice(7)
+    try { text = decodeURIComponent(text) } catch (e) {}
+    return text
+  }
+
+  function doNotDisturb() {
+    var raw = quietFile.text()
+    if (!raw || raw.length > 4096) return false
+    try {
+      var data = JSON.parse(raw)
+      return !!(data && data.dnd === true)
+    } catch (e) {
+      return false
+    }
+  }
+
+  function playRotation() {
+    if (doNotDisturb() || !rotationSound) return
+    Util.execArgv([
+      "paplay",
+      "--client-name", "Up",
+      "--stream-name", "Up",
+      rotationSound
+    ])
+  }
+
   function refresh() {
-    board = Model.board(stateFile.text(), Date.now())
+    var next = Model.board(stateFile.text(), Date.now())
+    var top = Model.topName(next)
+    if (Model.rotated(lastTop, top)) playRotation()
+    if (top) lastTop = top
+    board = next
   }
 
   function injectPanel() {
@@ -102,6 +143,13 @@ BarWidget {
   }
 
   Commons.Translations { id: strings; directory: Qt.resolvedUrl("i18n") }
+
+  FileView {
+    id: quietFile
+    path: root.quietPath
+    watchChanges: true
+    printErrors: false
+  }
 
   FileView {
     id: codeFile

@@ -6,7 +6,7 @@ The bar shows the first names of the top two people on the POSITION list. Click 
 
 The end time is formatted by `timeFormat` on the `giaodn.up` entry in `~/.config/omarchy/shell.json`. `HHmm` prints 1501. `HH:mm` prints 15:01. `h:mma` prints 3:01pm.
 
-The list is requested from Nextup once a minute. Chromium does not have to be open. The `extension/` directory and `host.py` are not part of the install.
+The list is requested from Nextup once a minute. When a new person reaches the top, a short chime plays. Do Not Disturb keeps it quiet. Chromium does not have to be open. The `extension/` directory and `host.py` are not part of the install.
 
 ## Install
 
@@ -66,3 +66,4 @@ No sudo or pkexec is required.
 - 1Password CLI (`op`), with Integrate with 1Password CLI turned on
 - A Nextup login stored in 1Password
 - Network access to `https://login.thenextup.com`
+- `paplay`, which Omarchy already provides, for the rotation chime
