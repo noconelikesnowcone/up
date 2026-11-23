@@ -1,0 +1,13 @@
+[Unit]
+Description=Nextup position list
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/.config/omarchy/plugins/giaodn.up/poll.py
+Restart=on-failure
+RestartSec=15
+Environment=OP_BIOMETRIC_UNLOCK_ENABLED=true
+
+[Install]
+WantedBy=default.target
